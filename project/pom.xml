@@ -3,5 +3,12 @@
   <groupId>project</groupId>
   <artifactId>project</artifactId>
   <version>0.0.1-SNAPSHOT</version>
+  <packaging>pom</packaging>
   <name>project</name>
+  <url>http://maven.apache.org</url> 
+<modules>
+    <module>bot</module>
+    <module>link-parser</module>
+    <module>scrapper</module>
+</modules>
 </project>
