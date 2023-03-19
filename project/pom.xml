@@ -13,7 +13,13 @@
   <version>23.1.0</version>
   <scope>compile</scope>
   </dependency>
+  <dependency>
+    <groupId>project</groupId>
+    <artifactId>link-parser</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
 </dependencies>
+
   <dependencyManagement>
     <dependencies>
       <dependency>
