@@ -1,4 +1,4 @@
-package project;
+package parser;
 
 import java.util.Scanner;
 
