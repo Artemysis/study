@@ -1,4 +1,4 @@
-package controllers;
+package ru.tinkoff.edu.java.bot;
 
 import java.util.List;
 

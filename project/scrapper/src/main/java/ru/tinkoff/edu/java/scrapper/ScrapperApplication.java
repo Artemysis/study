@@ -20,5 +20,6 @@ public class ScrapperApplication {
         String questionId = linkParser.parseLink("");
         System.out.println(userRepo);
         System.out.println(questionId);
+        System.out.println(config);
     }
 }
