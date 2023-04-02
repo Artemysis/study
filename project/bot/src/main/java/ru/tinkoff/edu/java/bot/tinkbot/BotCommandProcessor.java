@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
-public class BotCommandProcessor {
+public class BotCommandProcessor implements CommandExecutor {
     private final TelegramBot bot;
     private final Map<Integer, User> users = new HashMap<>();
 
@@ -26,36 +26,60 @@ public class BotCommandProcessor {
         bot = new TelegramBot(config.telegramBotToken());
     }
 
-    public void processCommand(Message message) {
-        String command = message.getText();
-        int userId = message.getFrom().getId();
-
+    @Override
+    public void start(int userId) {
         User user = users.getOrDefault(userId, new User(userId, null));
-        switch (command) {
-            case "/start":
-                registerUser(user);
-                break;
-            case "/help":
-                sendHelpMessage(userId);
-                break;
-            case "/track":
-                trackLink(user, "link to track");
-                break;
-            case "/untrack":
-                untrackLink(user, "link to untrack");
-                break;
-            case "/list":
-                listTrackedLinks(user);
-                break;
-            default:
-                sendUnknownCommandMessage(userId);
-        }
+        registerUser(user);
+    }
+
+    @Override
+    public void help(int userId) {
+        sendHelpMessage(userId);
+    }
+
+    @Override
+    public void track(int userId, String link) {
+        User user = users.getOrDefault(userId, new User(userId, null));
+        trackLink(user, link);
+    }
+
+    @Override
+    public void untrack(int userId, String link) {
+        User user = users.getOrDefault(userId, new User(userId, null));
+        untrackLink(user, link);
+    }
+
+    @Override
+    public void list(int userId) {
+        User user = users.getOrDefault(userId, new User(userId, null));
+        listTrackedLinks(user);
     }
 
     private void registerUser(User user) {
         users.putIfAbsent(user.userId(), user);
         bot.execute(new SendMessage(user.userId(), "Добро пожаловать в бот"));
     }   
+    
+    public void processCommand(Message message) {
+        String text = message.getText();
+        if (text.startsWith("/start")) {
+            start(message.getFrom().getId());
+        } else if (text.startsWith("/help")) {
+            help(message.getFrom().getId());
+        } else if (text.startsWith("/track")) {
+            String link = text.substring("/track".length()).trim();
+            track(message.getFrom().getId(), link);
+        } else if (text.startsWith("/untrack")) {
+            String link = text.substring("/untrack".length()).trim();
+            untrack(message.getFrom().getId(), link);
+        } else if (text.startsWith("/list")) {
+            list(message.getFrom().getId());
+        } else {
+            sendUnknownCommandMessage(message.getFrom().getId());
+        }
+    }
+
+    
     private void sendHelpMessage(int userId) {
         bot.execute(new SendMessage(userId, "Доступные команды:\n" +
                 "/start - Зарегистрировать пользователя\n" +
@@ -93,4 +117,3 @@ public class BotCommandProcessor {
         bot.execute(new SendMessage(userId, "Неизвестная команда. Используйте /help, чтобы просмотреть доступные команды."));
     }
 }
-

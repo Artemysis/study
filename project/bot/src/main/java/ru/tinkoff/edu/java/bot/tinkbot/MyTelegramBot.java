@@ -15,21 +15,20 @@ import ru.tinkoff.edu.java.bot.configuration.ApplicationConfig;
 
 @Component
 public class MyTelegramBot extends TelegramLongPollingBot {
-    private final BotCommandProcessor commandProcessor;
-    
-    
-    @Autowired
-    public MyTelegramBot(BotCommandProcessor commandProcessor) {
-        this.commandProcessor = commandProcessor;
-    }
+	  private final BotCommandProcessor commandProcessor;
 
-    @Override
-    public void onUpdateReceived(Update update) {
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            Message message = update.getMessage();
-            commandProcessor.processCommand(message);
-        }
-    }
+	    @Autowired
+	    public MyTelegramBot(BotCommandProcessor commandProcessor) {
+	        this.commandProcessor = commandProcessor;
+	    }
+
+	    @Override
+	    public void onUpdateReceived(Update update) {
+	        if (update.hasMessage() && update.getMessage().hasText()) {
+	            Message message = update.getMessage();
+	            commandProcessor.processCommand(message);
+	        }
+	    }
 
     @Override
     public String getBotUsername() {
