@@ -7,12 +7,16 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.request.SetMyCommands;
 
 import ru.tinkoff.edu.java.bot.configuration.ApplicationConfig;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -20,11 +24,19 @@ import java.util.Set;
 public class BotCommandProcessor implements CommandExecutor {
     private final TelegramBot bot;
     private final Map<Integer, User> users = new HashMap<>();
-
+    
     @Autowired
     public BotCommandProcessor(ApplicationConfig config) {
         bot = new TelegramBot(config.telegramBotToken());
+        List<BotCommand> commands = new ArrayList<>();
+        commands.add(new BotCommand("start", "Зарегистрировать пользователя"));
+        commands.add(new BotCommand("help", "Показать доступные команды"));
+        commands.add(new BotCommand("track", "Начните отслеживать ссылку"));
+        commands.add(new BotCommand("untrack", "Прекратить отслеживание ссылки"));
+        commands.add(new BotCommand("list", "Список отслеживаемых ссылок"));
+        bot.execute(new SetMyCommands(commands.toArray(new BotCommand[0])));
     }
+
 
     @Override
     public void start(int userId) {
@@ -113,6 +125,8 @@ public class BotCommandProcessor implements CommandExecutor {
         }
     }
 
+    
+    
     private void sendUnknownCommandMessage(int userId) {
         bot.execute(new SendMessage(userId, "Неизвестная команда. Используйте /help, чтобы просмотреть доступные команды."));
     }

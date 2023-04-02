@@ -7,4 +7,3 @@ public interface CommandExecutor {
     void untrack(int userId, String link);
     void list(int userId);
 }
-
