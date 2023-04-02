@@ -80,7 +80,11 @@ public class BotCommandProcessor implements CommandExecutor {
             help(message.getFrom().getId());
         } else if (text.startsWith("/track")) {
             String link = text.substring("/track".length()).trim();
-            track(message.getFrom().getId(), link);
+            if (link.isEmpty()) {
+                sendEmptyLinkMessage(message.getFrom().getId());
+            } else {
+                track(message.getFrom().getId(), link);
+            }
         } else if (text.startsWith("/untrack")) {
             String link = text.substring("/untrack".length()).trim();
             untrack(message.getFrom().getId(), link);
@@ -89,6 +93,10 @@ public class BotCommandProcessor implements CommandExecutor {
         } else {
             sendUnknownCommandMessage(message.getFrom().getId());
         }
+    }
+
+    private void sendEmptyLinkMessage(int userId) {
+        bot.execute(new SendMessage(userId, "Ошибка: не указана ссылка для отслеживания. Используйте команду в формате: /track <ссылка>."));
     }
 
     

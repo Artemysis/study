@@ -45,7 +45,7 @@ public class MyTelegramBot extends TelegramLongPollingBot {
             TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(this);
         } catch (TelegramApiRequestException e) {
-            throw new TelegramApiException("Failed to register bot", e);
+            throw new TelegramApiException("ошибка", e);
         }
     }
 
