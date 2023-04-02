@@ -5,7 +5,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.core.publisher.Mono;
 
 public interface StackOverflowClient {
-    QuestionResponse getQuestion(long id) throws WebClientResponseException;
-    Mono<QuestionResponse> fetchQuestion(long questionId);
+    Mono<QuestionResponse> getQuestion(long id) throws WebClientResponseException;
+    QuestionResponse getQuestion(int id);
 }
 

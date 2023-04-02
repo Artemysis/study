@@ -21,16 +21,10 @@ public class StackOverflowClientImpl implements StackOverflowClient {
                 .block();
     }
 
-public Mono<QuestionResponse> fetchQuestion(long questionId) {
-    return webClient.get()
-            .uri("/questions/{id}?site=stackoverflow&filter=withbody", questionId)
-            .retrieve()
-            .bodyToMono(QuestionResponse.class);
-}
+	@Override
+	public Mono<QuestionResponse> getQuestion(long id) throws WebClientResponseException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-@Override
-public QuestionResponse getQuestion(long id) throws WebClientResponseException {
-	// TODO Auto-generated method stub
-	return null;
-}
 }

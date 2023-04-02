@@ -18,6 +18,6 @@ public class QuestionController {
     
     @GetMapping("/questions/{id}")
     public Mono<QuestionResponse> getQuestion(@PathVariable long id) {
-        return stackOverflowClient.fetchQuestion(id);
+        return stackOverflowClient.getQuestion(id);
     }
 }
