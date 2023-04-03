@@ -18,7 +18,7 @@ public record User(int userId, Set<String> trackedLinks) {
         return trackedLinks.remove(link);
     }
     
-    public Set<String> getTrackedLinks() {
+    public Set<String> getTrackedLinks(Set<String> links) {
         return new HashSet<>(trackedLinks);
     }
 }

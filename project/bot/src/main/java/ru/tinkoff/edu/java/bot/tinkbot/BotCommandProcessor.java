@@ -22,11 +22,14 @@ import java.util.Set;
 
 @Component
 public class BotCommandProcessor implements CommandExecutor {
-    private final TelegramBot bot;
-    private final Map<Integer, User> users = new HashMap<>();
+    public ApplicationConfig config;
+    public TelegramBot bot;
+    public final Map<Integer, User> users = new HashMap<>();
     
     @Autowired
-    public BotCommandProcessor(ApplicationConfig config) {
+    public BotCommandProcessor(TelegramBot bot, ApplicationConfig config) {
+    	this.bot = bot;
+        this.config = config;
         bot = new TelegramBot(config.telegramBotToken());
         List<BotCommand> commands = new ArrayList<>();
         commands.add(new BotCommand("start", "Зарегистрировать пользователя"));
@@ -123,7 +126,7 @@ public class BotCommandProcessor implements CommandExecutor {
     }
 
     private void listTrackedLinks(User user) {
-        Set<String> trackedLinks = user.getTrackedLinks();
+        Set<String> trackedLinks = user.trackedLinks();
         if (trackedLinks.isEmpty()) {
             bot.execute(new SendMessage(user.userId(), "В настоящее время никакие ссылки не отслеживаются."));
         } else {

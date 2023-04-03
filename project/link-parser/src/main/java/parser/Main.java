@@ -12,11 +12,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
-            System.out.println("Введите ссылки или напишите 'Выход' для того чтобы остановить программу: ");
             String input = scanner.nextLine();
-            if ("Выход".equalsIgnoreCase(input)) {
-                break;
-            }
             LinkParser linkParser;
             if (input.startsWith("https://github.com")) {
                 linkParser = new GithubLinkParser();
