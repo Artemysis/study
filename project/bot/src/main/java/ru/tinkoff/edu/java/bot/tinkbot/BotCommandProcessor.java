@@ -1,35 +1,25 @@
 package ru.tinkoff.edu.java.bot.tinkbot;
-
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Message;
-
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.BotCommand;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetMyCommands;
-
 import ru.tinkoff.edu.java.bot.configuration.ApplicationConfig;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 @Component
 public class BotCommandProcessor implements CommandExecutor {
-    public ApplicationConfig config;
-    public TelegramBot bot;
+    public final TelegramBot bot;
     public final Map<Integer, User> users = new HashMap<>();
     
     @Autowired
-    public BotCommandProcessor(TelegramBot bot, ApplicationConfig config) {
-    	this.bot = bot;
-        this.config = config;
+    public BotCommandProcessor(ApplicationConfig config) {
         bot = new TelegramBot(config.telegramBotToken());
         List<BotCommand> commands = new ArrayList<>();
         commands.add(new BotCommand("start", "Зарегистрировать пользователя"));
@@ -39,37 +29,30 @@ public class BotCommandProcessor implements CommandExecutor {
         commands.add(new BotCommand("list", "Список отслеживаемых ссылок"));
         bot.execute(new SetMyCommands(commands.toArray(new BotCommand[0])));
     }
-
-
     @Override
     public void start(int userId) {
         User user = users.getOrDefault(userId, new User(userId, null));
         registerUser(user);
     }
-
     @Override
     public void help(int userId) {
         sendHelpMessage(userId);
     }
-
     @Override
     public void track(int userId, String link) {
         User user = users.getOrDefault(userId, new User(userId, null));
         trackLink(user, link);
     }
-
     @Override
     public void untrack(int userId, String link) {
         User user = users.getOrDefault(userId, new User(userId, null));
         untrackLink(user, link);
     }
-
     @Override
     public void list(int userId) {
         User user = users.getOrDefault(userId, new User(userId, null));
         listTrackedLinks(user);
     }
-
     private void registerUser(User user) {
         users.putIfAbsent(user.userId(), user);
         bot.execute(new SendMessage(user.userId(), "Добро пожаловать в бот"));
@@ -83,6 +66,7 @@ public class BotCommandProcessor implements CommandExecutor {
             help(message.getFrom().getId());
         } else if (text.startsWith("/track")) {
             String link = text.substring("/track".length()).trim();
+            track(message.getFrom().getId(), link);
             if (link.isEmpty()) {
                 sendEmptyLinkMessage(message.getFrom().getId());
             } else {
@@ -102,7 +86,7 @@ public class BotCommandProcessor implements CommandExecutor {
         bot.execute(new SendMessage(userId, "Ошибка: не указана ссылка для отслеживания. Используйте команду в формате: /track <ссылка>."));
     }
 
-    
+
     private void sendHelpMessage(int userId) {
         bot.execute(new SendMessage(userId, "Доступные команды:\n" +
                 "/start - Зарегистрировать пользователя\n" +
@@ -111,12 +95,10 @@ public class BotCommandProcessor implements CommandExecutor {
                 "/untrack - Прекратить отслеживание ссылки\n" +
                 "/list - Список отслеживаемых ссылок"));
     }
-
     private void trackLink(User user, String link) {
         user.addTrackedLink(link);
         bot.execute(new SendMessage(user.userId(), "Ссылка добавлена в список отслеживания: " + link));
     }
-
     private void untrackLink(User user, String link) {
         if (user.removeTrackedLink(link)) {
             bot.execute(new SendMessage(user.userId(), "Ссылка удалена из списка отслеживания: " + link));
@@ -124,9 +106,8 @@ public class BotCommandProcessor implements CommandExecutor {
             bot.execute(new SendMessage(user.userId(), "Ссылка не найдена в списке отслеживания: " + link));
         }
     }
-
     private void listTrackedLinks(User user) {
-        Set<String> trackedLinks = user.trackedLinks();
+        Set<String> trackedLinks = user.getTrackedLinks();
         if (trackedLinks.isEmpty()) {
             bot.execute(new SendMessage(user.userId(), "В настоящее время никакие ссылки не отслеживаются."));
         } else {
@@ -135,7 +116,6 @@ public class BotCommandProcessor implements CommandExecutor {
             bot.execute(new SendMessage(user.userId(), messageBuilder.toString()));
         }
     }
-
     
     
     private void sendUnknownCommandMessage(int userId) {
