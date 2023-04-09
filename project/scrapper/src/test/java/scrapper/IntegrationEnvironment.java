@@ -1,41 +1,64 @@
 package scrapper;
 
-import liquibase.Liquibase;
-
+import java.io.File;
+import java.nio.file.Path;
+import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.utility.DockerImageName;
 
 import liquibase.Contexts;
 import liquibase.LabelExpression;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
 public class IntegrationEnvironment {
+    static final PostgreSQLContainer<?> POSTGRES_CONTAINER =
+        new PostgreSQLContainer<>(DockerImageName.parse("postgres:14-alpine"))
+            .withDatabaseName("scrapper")
+            .withUsername("Artem")
+            .withPassword("12345")
+            .withInitScript("chat.sql")
+            .withEnv("LANG", "en_US.utf8");
+    
 
-    private static PostgreSQLContainer<?> container;
+    private static boolean started = false;
 
-    public static synchronized PostgreSQLContainer<?> getInstance() {
-        if (container == null) {
-            container = new PostgreSQLContainer<>("postgres:14-alpine")
-                    .withDatabaseName("scrapper")
-                    .withUsername("Artem")
-                    .withPassword("12345");
-            container.start();
-            // run Liquibase migrations
-            runLiquibaseMigrations(container.getJdbcUrl(), container.getUsername(), container.getPassword());
+    static void startContainer() {
+        if (!started) {
+            POSTGRES_CONTAINER.start();
+            started = true;
+            migrate();
         }
-        return container;
     }
 
-    private static void runLiquibaseMigrations(String jdbcUrl, String username, String password) {
-        try {
-            Liquibase liquibase = new Liquibase("migrations/master.xml", new ClassLoaderResourceAccessor(), new JdbcConnection(
-                    DriverManager.getConnection(jdbcUrl, username, password)));
+    private static void migrate() {
+        try (Connection connection = getConnection();
+             Database database = DatabaseFactory.getInstance()
+                 .findCorrectDatabaseImplementation(new JdbcConnection(connection))) {
+            Liquibase liquibase = new Liquibase("migrations/master.xml",
+                                                new ClassLoaderResourceAccessor(),
+                                                database);
             liquibase.update(new Contexts(), new LabelExpression());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
 
+    private static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(
+            POSTGRES_CONTAINER.getJdbcUrl(),
+            POSTGRES_CONTAINER.getUsername(),
+            POSTGRES_CONTAINER.getPassword());
+    }
+
+    static {
+        startContainer();
+    }
 }
