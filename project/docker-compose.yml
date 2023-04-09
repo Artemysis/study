@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  postgresql:
+    image: postgres:14-alpine
+    volumes:
+      - scrapper_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: 12345
+      POSTGRES_USER: Artem
+      POSTGRES_DB: scrapper
+    networks:
+      - backend
+    ports:
+      - "5432:5432"
+
+  liquibase-migrations:
+    image: liquibase/liquibase:4.18
+    depends_on:
+      - postgresql
+    command:
+      - --hub-mode=off
+      - --changelog-file=master.xml
+      - --driver=org.postgresql.Driver
+      - --url=jdbc:postgresql://postgresql:5432/scrapper
+      - --username=Artem
+      - --password=12345
+      - update
+    volumes:
+      - ./migrations:/liquibase/changelog
+    networks:
+      - backend
+
+networks:
+  backend:
+
+volumes:
+  scrapper_data:
