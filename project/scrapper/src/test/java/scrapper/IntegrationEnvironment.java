@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import liquibase.Contexts;
@@ -22,13 +23,13 @@ import liquibase.resource.DirectoryResourceAccessor;
 import ru.tinkoff.edu.java.scrapper.ScrapperApplication;
 
 public class IntegrationEnvironment {
+    @Container
     static final PostgreSQLContainer<?> POSTGRES_CONTAINER =
         new PostgreSQLContainer<>(DockerImageName.parse("postgres:14-alpine"))
             .withDatabaseName("scrapper")
             .withUsername("Artem")
             .withPassword("12345");
     
-
     private static boolean started = false;
 
     static void startContainer() {
@@ -43,7 +44,7 @@ public class IntegrationEnvironment {
         try (Connection connection = getConnection();
              Database database = DatabaseFactory.getInstance()
                  .findCorrectDatabaseImplementation(new JdbcConnection(connection))) {
-            Liquibase liquibase = new Liquibase("migrations/master.xml",
+            Liquibase liquibase = new Liquibase("master.xml",
                                                 new DirectoryResourceAccessor(new File("migrations")),
                                                 database);
             liquibase.update(new Contexts(), new LabelExpression());
@@ -52,7 +53,7 @@ public class IntegrationEnvironment {
         }
     }
 
-    private static Connection getConnection() throws SQLException {
+    static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
             POSTGRES_CONTAINER.getJdbcUrl(),
             POSTGRES_CONTAINER.getUsername(),
