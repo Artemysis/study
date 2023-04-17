@@ -10,15 +10,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 public class IntegrationEnvironmentTest {
-	@Container
-	private static final PostgreSQLContainer<?> POSTGRES_CONTAINER =
-	    new PostgreSQLContainer<>(DockerImageName.parse("postgres:14-alpine"))
-	        .withDatabaseName("scrapper")
-	        .withUsername("Artem")
-	        .withPassword("12345");
+  @Container
+  private static final PostgreSQLContainer<?> POSTGRES_CONTAINER =
+      new PostgreSQLContainer<>(DockerImageName.parse("postgres:14-alpine"))
+          .withDatabaseName("scrapper")
+          .withUsername("Artem")
+          .withPassword("12345");
 
-	@Test
-	void testContainerStarted() {
-	    assertTrue(POSTGRES_CONTAINER.isRunning());
-	}
+  @Test
+  void testContainerStarted() {
+      assertTrue(POSTGRES_CONTAINER.isRunning());
+  }
 }
