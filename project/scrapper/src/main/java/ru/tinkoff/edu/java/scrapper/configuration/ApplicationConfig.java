@@ -1,19 +1,25 @@
 package ru.tinkoff.edu.java.scrapper.configuration;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import ru.tinkoff.edu.java.scrapper.http.ScraperHttpClient;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.context.annotation.Configuration;
 
-@Validated
-@ConfigurationProperties(prefix = "app", ignoreUnknownFields = false)
-public record ApplicationConfig(@NotNull String test, @NotBlank String schedulerInterval, @NotBlank String baseUrl) {
+import java.time.Duration;
+
+@Configuration
+@RequiredArgsConstructor
+public class ApplicationConfig {
+    private final ApplicationProperties applicationProperties;
 
     @Bean
-    public ScraperHttpClient scraperHttpClient() {
-        return new ScraperHttpClient(baseUrl);
+    public Duration linkUpdateAge() {
+        return applicationProperties.linkUpdateAge();
     }
+
+    @Bean
+    public long linkUpdateSchedulerIntervalMs() {
+        return applicationProperties.scheduler().interval().toMillis();
+    }
+
 }

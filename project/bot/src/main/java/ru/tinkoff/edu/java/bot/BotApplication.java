@@ -8,9 +8,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import ru.tinkoff.edu.java.bot.configuration.ApplicationConfig;
 import ru.tinkoff.edu.java.bot.tinkbot.MyTelegramBot;
-import parser.GithubLinkParser;
-import parser.LinkParser;
-import parser.StackoverflowLinkParser;
+
 
 @Configuration
 @SpringBootApplication
@@ -26,12 +24,5 @@ public class BotApplication {
 	    } catch (TelegramApiException e) {
 	        e.printStackTrace();
 	    }
-        LinkParser linkParser = new GithubLinkParser();
-        String userRepo = linkParser.parseLink("");
-        linkParser = new StackoverflowLinkParser();
-        String questionId = linkParser.parseLink("");
-        System.out.println(userRepo);
-        System.out.println(questionId);
-        System.out.println(config);
     }
 }

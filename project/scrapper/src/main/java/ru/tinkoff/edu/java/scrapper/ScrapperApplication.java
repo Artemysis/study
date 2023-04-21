@@ -1,25 +1,26 @@
 package ru.tinkoff.edu.java.scrapper;
 
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import ru.tinkoff.edu.java.scrapper.configuration.ApplicationConfig;
-import parser.GithubLinkParser;
-import parser.StackoverflowLinkParser;
-import parser.LinkParser;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import ru.tinkoff.edu.java.scrapper.configuration.ApplicationProperties;
+import ru.tinkoff.edu.java.scrapper.configuration.GitHubConfiguration;
+import ru.tinkoff.edu.java.scrapper.configuration.StackOverflowConfiguration;
+
 
 @SpringBootApplication
-@EnableConfigurationProperties(ApplicationConfig.class)
+@EnableScheduling
+@EnableConfigurationProperties({
+        ApplicationProperties.class,
+        GitHubConfiguration.class,
+        StackOverflowConfiguration.class}
+)
 public class ScrapperApplication {
     public static void main(String[] args) {
         var ctx = SpringApplication.run(ScrapperApplication.class, args);
-        ApplicationConfig config = ctx.getBean(ApplicationConfig.class);
-        LinkParser linkParser = new GithubLinkParser();
-        String userRepo = linkParser.parseLink("");
-        linkParser = new StackoverflowLinkParser();
-        String questionId = linkParser.parseLink("");
-        System.out.println(userRepo);
-        System.out.println(questionId);
+        ApplicationProperties config = ctx.getBean(ApplicationProperties.class);
         System.out.println(config);
     }
 }
