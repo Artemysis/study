@@ -3,15 +3,14 @@ package ru.tinkoff.edu.java.scrapper.repository.jooq;
 import lombok.RequiredArgsConstructor;
 import org.jooq.DSLContext;
 import org.jooq.JSONB;
-import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Repository;
 import ru.tinkoff.edu.java.scrapper.exception.DBException;
+import ru.tinkoff.edu.java.scrapper.model.Chat;
 import ru.tinkoff.edu.java.scrapper.model.Link;
 import ru.tinkoff.edu.java.scrapper.model.jooq.tables.records.LinkRecord;
 import ru.tinkoff.edu.java.scrapper.repository.LinkRepository;
 
 import java.time.OffsetDateTime;
-import java.time.temporal.TemporalAmount;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,8 +18,8 @@ import static ru.tinkoff.edu.java.scrapper.model.jooq.tables.ChatLink.CHAT_LINK;
 import static ru.tinkoff.edu.java.scrapper.model.jooq.tables.Link.LINK;
 
 
-@Primary
-@Repository
+
+//@Repository
 @RequiredArgsConstructor
 public class JooqLinkRepository implements LinkRepository {
     private final DSLContext dsl;
@@ -31,12 +30,12 @@ public class JooqLinkRepository implements LinkRepository {
 
 
     @Override
-    public List<Link> findAllByChat(long chatId) {
+    public List<Link> findAllByChat(Chat chat) {
         return dsl.select(LINK.fields())
                 .from(LINK)
                 .join(CHAT_LINK)
                 .on(LINK.ID.eq(CHAT_LINK.LINK_ID))
-                .where(CHAT_LINK.CHAT_ID.eq(chatId))
+                .where(CHAT_LINK.CHAT_ID.eq(chat.getId()))
                 .fetchGroups(LINK)
                 .keySet().stream().map(this::mapToLink).toList();
     }
@@ -56,9 +55,9 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public List<Link> findLeastRecentlyUpdated(TemporalAmount delta) {
+    public List<Link> findLeastRecentlyUpdated(OffsetDateTime olderThan) {
         return dsl.selectFrom(LINK)
-                .where(LINK.UPDATED_AT.lessThan(OffsetDateTime.now().minus(delta)))
+                .where(LINK.UPDATED_AT.lessThan(olderThan))
                 .fetch(this::mapToLink);
     }
 
@@ -87,20 +86,19 @@ public class JooqLinkRepository implements LinkRepository {
     }
 
     @Override
-    public boolean addToChat(long chatId, long linkId) {
+    public boolean addToChat(Chat chat, Link link) {
         var ifExists = dsl.selectFrom(CHAT_LINK)
-                .where(CHAT_LINK.CHAT_ID.eq(chatId), CHAT_LINK.LINK_ID.eq(linkId))
-                .fetchOptional().isEmpty();
-        return ifExists && dsl.insertInto(CHAT_LINK, CHAT_LINK.fields())
-                .values(chatId, linkId)
+                .where(CHAT_LINK.CHAT_ID.eq(chat.getId()), CHAT_LINK.LINK_ID.eq(link.getId()))
+                .fetchOptional().isPresent();
+        return !ifExists && dsl.insertInto(CHAT_LINK, CHAT_LINK.fields())
+                .values(chat.getId(), link.getId())
                 .execute() == 1;
     }
 
-    
     @Override
-    public boolean removeFromChat(long chatId, long linkId) {
+    public boolean removeFromChat(Chat chat, Link link) {
         return dsl.deleteFrom(CHAT_LINK)
-                .where(CHAT_LINK.CHAT_ID.eq(chatId), CHAT_LINK.LINK_ID.eq(linkId))
+                .where(CHAT_LINK.CHAT_ID.eq(chat.getId()), CHAT_LINK.LINK_ID.eq(link.getId()))
                 .execute() == 1;
     }
 

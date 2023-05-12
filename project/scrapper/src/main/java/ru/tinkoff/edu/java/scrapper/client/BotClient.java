@@ -1,6 +1,5 @@
 package ru.tinkoff.edu.java.scrapper.client;
 
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;

@@ -1,13 +1,31 @@
 package ru.tinkoff.edu.java.scrapper.model;
 
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.Accessors;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "chat")
+@Getter
+@Setter
+@Accessors(chain = true)
 public class Chat {
-    private long id;
+
+    @Id
+    private Long id;
+
+    @ManyToMany
+    @JoinTable(
+            name = "chat_link",
+            joinColumns = @JoinColumn(name = "chat_id"),
+            inverseJoinColumns = @JoinColumn(name = "link_id")
+    )
+    private Set<Link> links = new HashSet<>();
+
 }
