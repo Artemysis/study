@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 
-//@Repository
+@Repository
 @Slf4j
 @RequiredArgsConstructor
 public class JdbcLinkRepository implements LinkRepository {

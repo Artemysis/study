@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-//@Repository
+@Repository
 @RequiredArgsConstructor
 public class JdbcChatRepository implements ChatRepository {
     private final JdbcTemplate jdbcTemplate;

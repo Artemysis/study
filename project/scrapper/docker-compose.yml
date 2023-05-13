@@ -14,9 +14,9 @@ services:
     networks:
       - backend
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
-      - ./migrationspg-data:/var/lib/postgresql/data
+      - pg-data:/var/lib/postgresql/data
 
   liquibase-migrations:
     image: liquibase/liquibase:4.18
