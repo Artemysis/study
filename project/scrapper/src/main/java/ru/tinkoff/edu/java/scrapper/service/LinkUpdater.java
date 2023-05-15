@@ -10,13 +10,14 @@ import java.util.Optional;
 
 import static java.util.Map.Entry;
 
-
-public interface LinkUpdater extends Updater {
+public interface LinkUpdater {
     void update();
 
     Optional<Entry<Link, String>> processGitHubLink(Link link, GitHubParsingResponse response);
 
     Optional<Entry<Link, String>> processStackOverflowLink(Link link, StackOverflowParsingResponse response);
+
+    void notifyBot(List<Entry<Link, String>> links);
 
     Optional<ParsingResponse> parseUrl(String url);
 }

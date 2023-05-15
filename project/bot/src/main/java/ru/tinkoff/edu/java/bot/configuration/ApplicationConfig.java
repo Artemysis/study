@@ -13,7 +13,7 @@ public record ApplicationConfig(
         @NotNull ScrapperClient client
 ) {
 
-    public record ScrapperClient(@DefaultValue("https://localhost:8000/api") String url) {}
+    public record ScrapperClient(@DefaultValue("https://localhost:5432/api") String url) {}
     public record Bot(String token) {}
 
 }
