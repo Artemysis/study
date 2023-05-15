@@ -3,7 +3,7 @@ app:
   bot:
     token: 6089957461:AAEoYQEna7LrM9iYMkDetsJu-9FSRm9rEVI
   client:
-    url: http://localhost:5432/api
+    url: http://localhost:8080/api
 
 server:
   port: 5432
