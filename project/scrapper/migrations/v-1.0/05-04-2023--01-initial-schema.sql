@@ -1,13 +1,12 @@
 -- liquibase formatted sql
 
--- changeset EmiAsk:create_chat_table
+-- changeset Artemysis:create_chat_table
 CREATE TABLE IF NOT EXISTS chat
 (
     id BIGINT PRIMARY KEY
 );
 
-
--- changeset EmiAsk:create_link_table
+-- changeset Artemysis:create_link_table
 CREATE TABLE IF NOT EXISTS link
 (
     id BIGSERIAL PRIMARY KEY,
@@ -15,8 +14,7 @@ CREATE TABLE IF NOT EXISTS link
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
-
--- changeset EmiAsk:create_chat_link_table
+-- changeset Artemysis:create_chat_link_table
 CREATE TABLE IF NOT EXISTS chat_link
 (
     chat_id BIGINT,

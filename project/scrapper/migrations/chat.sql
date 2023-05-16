@@ -1,7 +1,7 @@
 CREATE TABLE users (
 id INTEGER PRIMARY KEY,
 chat_id INTEGER NOT NULL,
-username VARCHAR(255) -- added in migration 
+username VARCHAR(255) 
 );
 
 CREATE TABLE links (
@@ -13,8 +13,3 @@ FOREIGN KEY (user_id)
 REFERENCES users(id)
 ON DELETE CASCADE
 );
-
-
-
-
-
